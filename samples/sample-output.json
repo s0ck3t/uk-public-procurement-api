@@ -1,0 +1,305 @@
+[
+  {
+    "ocid": "ocds-h6vhtk-045e7f-d8e2f9a1",
+    "source_platform": "find_a_tender",
+    "notice_type": "award",
+    "status": "complete",
+    "published_date": "2026-11-10T14:30:00Z",
+    "deadline_date": null,
+    "title": "Cloud Infrastructure Migration and Managed Services",
+    "description": "Statutory cloud migration contract under the Procurement Act 2023.",
+    "buyer_name": "Department for Science, Innovation and Technology",
+    "buyer_id": "GB-GOVUK-DSIT",
+    "buyer_region": "London",
+    "supplier_name": "Cloud Operations Limited",
+    "company_number": "08912345",
+    "award_value_gbp": 450000.0,
+    "tender_value_gbp": 450000.0,
+    "currency": "GBP",
+    "cpv_codes": [
+      "72000000",
+      "72222300"
+    ],
+    "lots_count": 1,
+    "enriched": true,
+    "deduplication_hash": "a4f89d31e9c20184b2e8812c759403d192a543ef810935cc23e4210d7a6e1903",
+    "supplier": {
+      "raw_name": "Cloud Operations Limited",
+      "clean_name": "Cloud Operations Limited",
+      "company_number": "08912345",
+      "companies_house_match": {
+        "company_number": "08912345",
+        "company_name": "CLOUD OPERATIONS LIMITED",
+        "status": "active",
+        "company_type": "ltd",
+        "sic_codes": [
+          "62020",
+          "62090"
+        ],
+        "incorporation_date": "2014-02-18",
+        "registered_postcode": "EC2A 4NE",
+        "registered_office_address": {
+          "address_line_1": "10 Finsbury Square",
+          "locality": "London",
+          "postal_code": "EC2A 4NE",
+          "country": "England"
+        },
+        "active_directors": [
+          {
+            "name": "SMITH, John Alexander",
+            "officer_role": "director",
+            "appointed_on": "2014-02-18"
+          },
+          {
+            "name": "DAVIES, Sarah Jane",
+            "officer_role": "director",
+            "appointed_on": "2016-09-01"
+          }
+        ],
+        "match_confidence": 1.0,
+        "matched_by": "statutory_id",
+        "matched_at": "2026-11-10T14:31:02.145Z"
+      }
+    },
+    "ocds_release": {
+      "ocid": "ocds-h6vhtk-045e7f-d8e2f9a1",
+      "id": "ocds-h6vhtk-045e7f-d8e2f9a1-01",
+      "date": "2026-11-10T14:30:00Z",
+      "tag": [
+        "award"
+      ],
+      "initiationType": "tender",
+      "language": "en",
+      "parties": [
+        {
+          "id": "GB-GOVUK-DSIT",
+          "name": "Department for Science, Innovation and Technology",
+          "roles": [
+            "buyer"
+          ],
+          "identifier": {
+            "scheme": "GB-GOVUK",
+            "id": "DSIT",
+            "legalName": "Department for Science, Innovation and Technology"
+          },
+          "address": {
+            "streetAddress": "100 Parliament Street",
+            "locality": "London",
+            "postalCode": "SW1A 2BQ",
+            "countryName": "United Kingdom"
+          },
+          "contactPoint": {
+            "name": "Commercial Directorate",
+            "email": "procurement@dsit.gov.uk"
+          }
+        },
+        {
+          "id": "GB-COH-08912345",
+          "name": "Cloud Operations Limited",
+          "roles": [
+            "supplier"
+          ],
+          "identifier": {
+            "scheme": "GB-COH",
+            "id": "08912345",
+            "legalName": "Cloud Operations Limited"
+          },
+          "address": {
+            "streetAddress": "10 Finsbury Square",
+            "locality": "London",
+            "postalCode": "EC2A 4NE",
+            "countryName": "United Kingdom"
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-GOVUK-DSIT",
+        "name": "Department for Science, Innovation and Technology"
+      },
+      "tender": {
+        "id": "TENDER-2026-001",
+        "title": "Cloud Infrastructure Migration and Managed Services",
+        "description": "Statutory cloud migration contract under the Procurement Act 2023.",
+        "status": "complete",
+        "value": {
+          "amount": 450000.0,
+          "currency": "GBP"
+        },
+        "procurementMethod": "open",
+        "procurementMethodDetails": "Open Procedure",
+        "mainProcurementCategory": "services",
+        "classification": {
+          "scheme": "CPV",
+          "id": "72000000",
+          "description": "IT services: consulting, software development, Internet and support"
+        },
+        "additionalClassifications": [
+          {
+            "scheme": "CPV",
+            "id": "72222300",
+            "description": "Information technology services"
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "AWARD-2026-001",
+          "title": "Contract Award: Cloud Infrastructure Migration",
+          "status": "active",
+          "date": "2026-11-10T14:00:00Z",
+          "value": {
+            "amount": 450000.0,
+            "currency": "GBP"
+          },
+          "suppliers": [
+            {
+              "id": "GB-COH-08912345",
+              "name": "Cloud Operations Limited"
+            }
+          ],
+          "contractPeriod": {
+            "startDate": "2026-12-01T00:00:00Z",
+            "endDate": "2029-11-30T23:59:59Z"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "ocid": "ocds-r6ebe6-2026-091823",
+    "source_platform": "public_contracts_scotland",
+    "notice_type": "tender",
+    "status": "active",
+    "published_date": "2026-11-10T11:00:00Z",
+    "deadline_date": "2026-12-15T12:00:00Z",
+    "title": "Digital Health Records Management System",
+    "description": "Framework contract for regional NHS health boards across Scotland.",
+    "buyer_name": "NHS National Services Scotland",
+    "buyer_id": "GB-NHS-NSS",
+    "buyer_region": "Scotland",
+    "supplier_name": null,
+    "company_number": null,
+    "award_value_gbp": null,
+    "tender_value_gbp": 1200000.0,
+    "currency": "GBP",
+    "cpv_codes": [
+      "48814000",
+      "72212000"
+    ],
+    "lots_count": 2,
+    "enriched": false,
+    "deduplication_hash": "bf6201a45ce31920194857b293847291a8374650192837465192837465192837",
+    "supplier": null,
+    "ocds_release": {
+      "ocid": "ocds-r6ebe6-2026-091823",
+      "id": "ocds-r6ebe6-2026-091823-01",
+      "date": "2026-11-10T11:00:00Z",
+      "tag": [
+        "tender"
+      ],
+      "initiationType": "tender",
+      "language": "en",
+      "parties": [
+        {
+          "id": "GB-NHS-NSS",
+          "name": "NHS National Services Scotland",
+          "roles": [
+            "buyer"
+          ],
+          "address": {
+            "streetAddress": "Gyle Square, 1 South Gyle Crescent",
+            "locality": "Edinburgh",
+            "postalCode": "EH12 9EB",
+            "countryName": "United Kingdom"
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-NHS-NSS",
+        "name": "NHS National Services Scotland"
+      },
+      "tender": {
+        "id": "TENDER-PCS-2026-0918",
+        "title": "Digital Health Records Management System",
+        "description": "Framework contract for regional NHS health boards across Scotland.",
+        "status": "active",
+        "value": {
+          "amount": 1200000.0,
+          "currency": "GBP"
+        },
+        "classification": {
+          "scheme": "CPV",
+          "id": "48814000",
+          "description": "Medical information systems"
+        }
+      }
+    }
+  },
+  {
+    "ocid": "ocds-b5fd17-cf-2026-0042",
+    "source_platform": "contracts_finder",
+    "notice_type": "award",
+    "status": "complete",
+    "published_date": "2026-11-09T09:15:00Z",
+    "deadline_date": null,
+    "title": "Cyber Security Vulnerability Assessment",
+    "description": "Independent penetration testing and vulnerability management services.",
+    "buyer_name": "Crown Commercial Service",
+    "buyer_id": "GB-GOVUK-CCS",
+    "buyer_region": "London",
+    "supplier_name": "Apex Cyber Solutions Ltd",
+    "company_number": "10482910",
+    "award_value_gbp": 85000.0,
+    "tender_value_gbp": 90000.0,
+    "currency": "GBP",
+    "cpv_codes": [
+      "72810000"
+    ],
+    "lots_count": 1,
+    "enriched": true,
+    "deduplication_hash": "c381928475610293847561029384756102938475610293847561029384756102",
+    "supplier": {
+      "raw_name": "Apex Cyber Solutions Ltd",
+      "clean_name": "Apex Cyber Solutions Ltd",
+      "company_number": "10482910",
+      "companies_house_match": {
+        "company_number": "10482910",
+        "company_name": "APEX CYBER SOLUTIONS LTD",
+        "status": "active",
+        "company_type": "ltd",
+        "sic_codes": [
+          "62090",
+          "80200"
+        ],
+        "incorporation_date": "2016-11-04",
+        "registered_postcode": "SW1A 2HQ",
+        "registered_office_address": {
+          "address_line_1": "1 Horse Guards Road",
+          "locality": "London",
+          "postal_code": "SW1A 2HQ",
+          "country": "England"
+        },
+        "active_directors": [
+          {
+            "name": "JOHNSON, Mark",
+            "officer_role": "director",
+            "appointed_on": "2016-11-04"
+          }
+        ],
+        "match_confidence": 0.95,
+        "matched_by": "statutory_id",
+        "matched_at": "2026-11-09T09:16:11.890Z"
+      }
+    },
+    "ocds_release": {
+      "ocid": "ocds-b5fd17-cf-2026-0042",
+      "id": "ocds-b5fd17-cf-2026-0042-01",
+      "date": "2026-11-09T09:15:00Z",
+      "tag": [
+        "award"
+      ],
+      "initiationType": "tender",
+      "language": "en"
+    }
+  }
+]

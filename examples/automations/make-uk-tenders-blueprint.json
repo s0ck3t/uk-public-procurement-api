@@ -1,0 +1,154 @@
+{
+  "name": "Daily UK Public Tenders (£100k+) to Google Sheets and Slack",
+  "flow": [
+    {
+      "id": 1,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "filter": null,
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "Schedule Trigger (Daily 08:00 UTC)"
+        },
+        "restore": {
+          "parameters": {
+            "type": "cron",
+            "cronExpression": "0 8 * * *"
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "apify:runActor",
+      "version": 1,
+      "parameters": {
+        "actorId": "YOUR_APIFY_USERNAME/uk-public-procurement-ocds-enricher",
+        "waitForFinish": true,
+        "input": "{\n  \"sources\": [\"find_a_tender\", \"contracts_finder\", \"public_contracts_scotland\"],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"date_from\": \"{{formatDate(addDays(now; -1); \"YYYY-MM-DD\")}}\",\n  \"date_to\": \"{{formatDate(now; \"YYYY-MM-DD\")}}\",\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
+      },
+      "filter": null,
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0,
+          "name": "Apify - Run Actor (Wait for Finish)"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "apify:getDatasetItems",
+      "version": 1,
+      "parameters": {
+        "datasetId": "{{2.defaultDatasetId}}",
+        "limit": 100
+      },
+      "filter": null,
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Apify - Get Dataset Items"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "google-sheets:searchRows",
+      "version": 1,
+      "parameters": {
+        "spreadsheetId": "YOUR_SPREADSHEET_ID",
+        "sheetId": "Procurement Tenders",
+        "filter": {
+          "column": "A",
+          "value": "{{3.ocid}}",
+          "operator": "equals"
+        },
+        "limit": 1
+      },
+      "filter": null,
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0,
+          "name": "Google Sheets - Deduplication Check"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:addRow",
+      "version": 1,
+      "parameters": {
+        "spreadsheetId": "YOUR_SPREADSHEET_ID",
+        "sheetId": "Procurement Tenders",
+        "values": [
+          "{{3.ocid}}",
+          "{{3.published_date}}",
+          "{{3.tender_value_gbp}}",
+          "{{3.buyer_name}}",
+          "{{3.title}}",
+          "{{3.deadline_date}}",
+          "{{3.source_platform}}",
+          "{{3.buyer_region}}"
+        ]
+      },
+      "filter": {
+        "name": "Only New Tenders (Not in Sheet)",
+        "conditions": [
+          [
+            {
+              "a": "{{4.totalNumberOfBundles}}",
+              "b": 0,
+              "o": "number:equal"
+            }
+          ]
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": -100,
+          "name": "Google Sheets - Append Tender Row"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "slack:createMessage",
+      "version": 1,
+      "parameters": {
+        "channel": "#uk-tender-alerts",
+        "text": "🏛️ *New UK Public Tender (£100k+)*\n*Title:* {{3.title}}\n*Buyer:* {{3.buyer_name}} ({{3.buyer_region}})\n*Estimated Value:* £{{formatNumber(3.tender_value_gbp; 2; \".\"; \",\")}} GBP\n*Deadline:* {{3.deadline_date}}\n*Source:* {{3.source_platform}}\n*OCID:* `{{3.ocid}}`"
+      },
+      "filter": {
+        "name": "Only New Tenders (Not in Sheet)",
+        "conditions": [
+          [
+            {
+              "a": "{{4.totalNumberOfBundles}}",
+              "b": 0,
+              "o": "number:equal"
+            }
+          ]
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 100,
+          "name": "Slack - Send Tender Alert"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "instant": false,
+    "description": "Daily automated pipeline querying the UK Public Procurement Apify Actor for tenders over £100,000, checking for duplicates, and logging to Google Sheets and Slack."
+  }
+}

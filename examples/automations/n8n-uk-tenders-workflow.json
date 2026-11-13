@@ -1,0 +1,212 @@
+{
+  "name": "Daily UK Public Tenders (£100k+) to Google Sheets and Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "1e7f3b8a-9c42-4b31-8692-0b1a2c3d4e5f",
+      "name": "Daily 8 AM Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 320]
+    },
+    {
+      "parameters": {
+        "resource": "actor",
+        "operation": "runActorAndGetDatasetItems",
+        "actorId": "YOUR_APIFY_USERNAME/uk-public-procurement-ocds-enricher",
+        "jsonInput": "={\n  \"sources\": [\"find_a_tender\", \"contracts_finder\", \"public_contracts_scotland\"],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"date_from\": \"{{ $today.minus({ days: 1 }).toISODate() }}\",\n  \"date_to\": \"{{ $today.toISODate() }}\",\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
+      },
+      "id": "2b8c4d9e-0a53-4c42-9703-1c2b3d4e5f6a",
+      "name": "Apify - Run Procurement Actor",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [480, 320],
+      "credentials": {
+        "apifyApi": {
+          "id": "apify_account_credential",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeProcessed",
+        "propertyToCompare": "ocid"
+      },
+      "id": "3c9d5e0f-1b64-4d53-a814-2d3c4e5f6a7b",
+      "name": "Deduplicate by OCID",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.2,
+      "position": [720, 320]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Procurement Tenders",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "OCID": "={{ $json.ocid }}",
+            "Published Date": "={{ $json.published_date }}",
+            "Estimated Value (GBP)": "={{ $json.tender_value_gbp }}",
+            "Authority Name": "={{ $json.buyer_name }}",
+            "Notice Title": "={{ $json.title }}",
+            "Submission Deadline": "={{ $json.deadline_date }}",
+            "Source Portal": "={{ $json.source_platform }}",
+            "Buyer Region": "={{ $json.buyer_region }}",
+            "Corporate Verification": "={{ $json.supplier && $json.supplier.companies_house_match ? $json.supplier.companies_house_match.company_name : 'N/A' }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "4d0e6f1a-2c75-4e64-b925-3e4d5f6a7b8c",
+      "name": "Google Sheets - Log Tender",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [980, 220],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google_sheets_credential",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#uk-tender-alerts",
+        "text": "=🏛️ New UK Tender (£100k+): {{ $json.title }} (£{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP)",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        },
+        "blocksUi": {
+          "blocksValues": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "🏛️ High-Value UK Public Tender (£100k+)"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "=*Title:*\n{{ $json.title }}\n\n*Contracting Authority:*\n{{ $json.buyer_name }} ({{ $json.buyer_region || 'National' }})"
+              }
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Estimated Value:*\n£{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Submission Deadline:*\n{{ $json.deadline_date ? new Date($json.deadline_date).toUTCString() : 'Unspecified' }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Source Platform:*\n{{ $json.source_platform.toUpperCase() }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*OCID Reference:*\n`{{ $json.ocid }}`"
+                }
+              ]
+            },
+            {
+              "type": "divider"
+            }
+          ]
+        }
+      },
+      "id": "5e1f7a2b-3d86-4f75-ca36-4f5e6a7b8c9d",
+      "name": "Slack - Post Tender Alert Card",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [980, 420],
+      "credentials": {
+        "slackApi": {
+          "id": "slack_credential",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Setup & Free Credits\n\n1. Sign up for a free Apify account at `https://apify.com/store?fpr=YOUR_AFFILIATE_ID` to receive $5 in free monthly compute.\n2. Obtain your API token from Console -> Settings -> Integrations.\n3. Configure your Apify credential in the 'Apify - Run Procurement Actor' node.\n4. Replace `YOUR_APIFY_USERNAME` with your Apify username.\n\n*This template queries the Actor daily, filters contracts >= £100k, and sends alerts to Google Sheets and Slack.*",
+        "height": 260,
+        "width": 360,
+        "color": 6
+      },
+      "id": "6f2a8b3c-4e97-4086-db47-5a6f7b8c9d0e",
+      "name": "Sticky Note - Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, 40]
+    }
+  ],
+  "connections": {
+    "Daily 8 AM Schedule": {
+      "main": [
+        [
+          {
+            "node": "Apify - Run Procurement Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify - Run Procurement Actor": {
+      "main": [
+        [
+          {
+            "node": "Deduplicate by OCID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicate by OCID": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Log Tender",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack - Post Tender Alert Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

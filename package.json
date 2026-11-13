@@ -1,0 +1,22 @@
+{
+  "name": "uk-public-procurement-api",
+  "version": "1.0.0",
+  "description": "Companion client examples, sample datasets, and Model Context Protocol (MCP) configurations for the UK Public Procurement Enriched OCDS Apify Actor",
+  "type": "module",
+  "keywords": [
+    "uk-procurement",
+    "find-a-tender",
+    "contracts-finder",
+    "public-contracts-scotland",
+    "companies-house",
+    "ocds",
+    "model-context-protocol",
+    "mcp",
+    "apify"
+  ],
+  "author": "James Tyas",
+  "license": "MIT",
+  "dependencies": {
+    "apify-client": "^2.9.0"
+  }
+}
