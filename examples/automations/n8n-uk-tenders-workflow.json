@@ -1,7 +1,77 @@
 {
-  "name": "Daily UK Public Tenders (£100k+) to Google Sheets and Slack",
+  "name": "Daily UK Public Tenders (\u00a3100k+) to Google Sheets and Slack",
   "nodes": [
     {
+      "parameters": {
+        "content": "## Daily UK Public Tenders (\u00a3100k+) to Google Sheets and Slack\n\n### How it works\n\nThis workflow runs every day at 8 AM UTC to extract UK public procurement tenders worth \u00a3100k or more across Find a Tender, Contracts Finder, and Public Contracts Scotland using the Apify Actor `jamestyas/uk-public-procurement-ocds-enricher`.\n\nIt removes duplicate notices by canonical OCID, then logs new opportunities to Google Sheets and posts alert cards to Slack in parallel.\n\n### Setup steps\n\n1. **Apify Account & API Token**:\n   Create a free Apify account at `https://apify.com/jamestyas/uk-public-procurement-ocds-enricher` (includes $5 in free monthly compute, covering daily 24h delta runs).\n   Copy your API token from Console -> Settings -> Integrations and add an Apify credential in n8n.\n2. **Google Sheets**:\n   Connect Google Sheets credentials. In your spreadsheet, ensure tab `Procurement Tenders` has headers in Row 1: `OCID`, `Estimated Value (GBP)`, `Notice Title`, `Authority Name`, `Project Scope & Description`, `Submission Deadline`, `Sector / CPV Codes`, `Published Date`, `Source Portal`, `Buyer Region`.\n3. **Slack (Optional)**:\n   Connect Slack credentials and select your `#tenders` channel (or leave disabled if only logging to Sheets).\n4. **Schedule Trigger**:\n   Set to run daily at 8:00 AM UTC.\n\n### Customisation\n\nAdjust the Apify Actor input JSON to filter specific CPV sector codes (e.g. `\"cpv_codes\": [\"72000000\"]` for IT services) or adjust the minimum threshold (`\"min_value_gbp\": 100000`).",
+        "width": 500,
+        "height": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -32
+      ],
+      "id": "1681a9f2-76b6-4a04-a664-c52b91993bbb",
+      "name": "Documentation & Setup Guide"
+    },
+    {
+      "parameters": {
+        "content": "## Schedule tender collection\n\nStarts the workflow daily at 8 AM UTC and executes the Apify procurement actor to extract UK tender opportunities >= \u00a3100k.",
+        "width": 432,
+        "height": 336,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        192,
+        144
+      ],
+      "id": "a8a9b6aa-ddc3-4d04-8306-f5cb4e1b8b61",
+      "name": "Collection Cluster"
+    },
+    {
+      "parameters": {
+        "content": "## Deduplicate tender records\n\nFilters fetched items to discard previously processed notices using the canonical OCID identifier.",
+        "width": 240,
+        "height": 464,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        672,
+        16
+      ],
+      "id": "9595ee6c-0e2a-4eaa-9141-502baa171177",
+      "name": "Deduplication Cluster"
+    },
+    {
+      "parameters": {
+        "content": "## Log and notify\n\nLogs new tenders with full scope descriptions to Google Sheets and sends alert cards to Slack in parallel.",
+        "width": 260,
+        "height": 608,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -32
+      ],
+      "id": "b7fb4014-4e8e-4551-b3f1-dfe232dde1c7",
+      "name": "Output Cluster"
+    },
+    {
+      "id": "1e7f3b8a-9c42-4b31-8692-0b1a2c3d4e5f",
+      "name": "When Daily at 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        240,
+        320
+      ],
       "parameters": {
         "rule": {
           "interval": [
@@ -12,87 +82,107 @@
           ]
         }
       },
-      "id": "1e7f3b8a-9c42-4b31-8692-0b1a2c3d4e5f",
-      "name": "Daily 8 AM Schedule",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [240, 320]
+      "typeVersion": 1.2
     },
     {
-      "parameters": {
-        "resource": "actor",
-        "operation": "runActorAndGetDatasetItems",
-        "actorId": "YOUR_APIFY_USERNAME/uk-public-procurement-ocds-enricher",
-        "jsonInput": "={\n  \"sources\": [\"find_a_tender\", \"contracts_finder\", \"public_contracts_scotland\"],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"date_from\": \"{{ $today.minus({ days: 1 }).toISODate() }}\",\n  \"date_to\": \"{{ $today.toISODate() }}\",\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
-      },
       "id": "2b8c4d9e-0a53-4c42-9703-1c2b3d4e5f6a",
-      "name": "Apify - Run Procurement Actor",
+      "name": "Run Daily Procurement Actor",
       "type": "@apify/n8n-nodes-apify.apify",
-      "typeVersion": 1,
-      "position": [480, 320],
+      "position": [
+        480,
+        320
+      ],
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "jamestyas/uk-public-procurement-ocds-enricher"
+        },
+        "resource": "Actors",
+        "operation": "Run actor and get dataset",
+        "actorSource": "recentlyUsed",
+        "actorInputMode": "json",
+        "customBody": "{\n  \"sources\": [\n    \"find_a_tender\",\n    \"contracts_finder\",\n    \"public_contracts_scotland\"\n  ],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
+      },
       "credentials": {
         "apifyApi": {
           "id": "apify_account_credential",
           "name": "Apify account"
         }
-      }
+      },
+      "typeVersion": 1
     },
     {
-      "parameters": {
-        "operation": "removeProcessed",
-        "propertyToCompare": "ocid"
-      },
       "id": "3c9d5e0f-1b64-4d53-a814-2d3c4e5f6a7b",
       "name": "Deduplicate by OCID",
       "type": "n8n-nodes-base.removeDuplicates",
-      "typeVersion": 1.2,
-      "position": [720, 320]
+      "position": [
+        720,
+        320
+      ],
+      "parameters": {
+        "logic": "removeItemsWithAlreadySeenKeyValues",
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.ocid }}"
+      },
+      "typeVersion": 2
     },
     {
+      "id": "4d0e6f1a-2c75-4e64-b925-3e4d5f6a7b8c",
+      "name": "Append Tenders to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1008,
+        224
+      ],
       "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "YOUR_GOOGLE_SHEET_ID",
-          "mode": "id"
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
         },
         "sheetName": {
           "__rl": true,
-          "value": "Procurement Tenders",
-          "mode": "name"
+          "mode": "name",
+          "value": "Procurement Tenders"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "OCID": "={{ $json.ocid }}",
-            "Published Date": "={{ $json.published_date }}",
-            "Estimated Value (GBP)": "={{ $json.tender_value_gbp }}",
-            "Authority Name": "={{ $json.buyer_name }}",
+            "Estimated Value (GBP)": "={{ $json.tender_value_gbp ? '\u00a3' + Number($json.tender_value_gbp).toLocaleString('en-GB') : 'N/A' }}",
             "Notice Title": "={{ $json.title }}",
-            "Submission Deadline": "={{ $json.deadline_date }}",
+            "Authority Name": "={{ $json.buyer_name }}",
+            "Project Scope & Description": "={{ $json.description || 'No description provided' }}",
+            "Submission Deadline": "={{ $json.deadline_date ? $json.deadline_date.replace('T', ' ').replace('.000Z', ' UTC') : 'Unspecified' }}",
+            "Sector / CPV Codes": "={{ $json.cpv_codes ? $json.cpv_codes.join(', ') : 'N/A' }}",
+            "Published Date": "={{ $json.published_date }}",
             "Source Portal": "={{ $json.source_platform }}",
-            "Buyer Region": "={{ $json.buyer_region }}",
-            "Corporate Verification": "={{ $json.supplier && $json.supplier.companies_house_match ? $json.supplier.companies_house_match.company_name : 'N/A' }}"
+            "Buyer Region": "={{ $json.buyer_region || 'National' }}"
           }
         },
         "options": {}
       },
-      "id": "4d0e6f1a-2c75-4e64-b925-3e4d5f6a7b8c",
-      "name": "Google Sheets - Log Tender",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
-      "position": [980, 220],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "google_sheets_credential",
           "name": "Google Sheets account"
         }
-      }
+      },
+      "typeVersion": 4.5
     },
     {
+      "id": "5e1f7a2b-3d86-4f75-ca36-4f5e6a7b8c9d",
+      "name": "Post Tender Alerts to Slack",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        1008,
+        416
+      ],
       "parameters": {
         "channel": "#uk-tender-alerts",
-        "text": "=🏛️ New UK Tender (£100k+): {{ $json.title }} (£{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP)",
+        "text": "=\ud83c\udfdb\ufe0f New UK Tender (\u00a3100k+): {{ $json.title }} (\u00a3{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP)",
         "otherOptions": {
           "includeLinkToWorkflow": false
         },
@@ -102,7 +192,7 @@
               "type": "header",
               "text": {
                 "type": "plain_text",
-                "text": "🏛️ High-Value UK Public Tender (£100k+)"
+                "text": "\ud83c\udfdb\ufe0f High-Value UK Public Tender (\u00a3100k+)"
               }
             },
             {
@@ -117,7 +207,7 @@
               "fields": [
                 {
                   "type": "mrkdwn",
-                  "text": "*Estimated Value:*\n£{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP"
+                  "text": "*Estimated Value:*\n\u00a3{{ Number($json.tender_value_gbp).toLocaleString('en-GB') }} GBP"
                 },
                 {
                   "type": "mrkdwn",
@@ -139,45 +229,28 @@
           ]
         }
       },
-      "id": "5e1f7a2b-3d86-4f75-ca36-4f5e6a7b8c9d",
-      "name": "Slack - Post Tender Alert Card",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.2,
-      "position": [980, 420],
       "credentials": {
         "slackApi": {
           "id": "slack_credential",
           "name": "Slack account"
         }
-      }
-    },
-    {
-      "parameters": {
-        "content": "### Setup & Free Credits\n\n1. Sign up for a free Apify account at `https://apify.com/store?fpr=YOUR_AFFILIATE_ID` to receive $5 in free monthly compute.\n2. Obtain your API token from Console -> Settings -> Integrations.\n3. Configure your Apify credential in the 'Apify - Run Procurement Actor' node.\n4. Replace `YOUR_APIFY_USERNAME` with your Apify username.\n\n*This template queries the Actor daily, filters contracts >= £100k, and sends alerts to Google Sheets and Slack.*",
-        "height": 260,
-        "width": 360,
-        "color": 6
       },
-      "id": "6f2a8b3c-4e97-4086-db47-5a6f7b8c9d0e",
-      "name": "Sticky Note - Setup Instructions",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [240, 40]
+      "typeVersion": 2.2
     }
   ],
   "connections": {
-    "Daily 8 AM Schedule": {
+    "When Daily at 8 AM": {
       "main": [
         [
           {
-            "node": "Apify - Run Procurement Actor",
+            "node": "Run Daily Procurement Actor",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Apify - Run Procurement Actor": {
+    "Run Daily Procurement Actor": {
       "main": [
         [
           {
@@ -192,12 +265,12 @@
       "main": [
         [
           {
-            "node": "Google Sheets - Log Tender",
+            "node": "Append Tenders to Sheets",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Slack - Post Tender Alert Card",
+            "node": "Post Tender Alerts to Slack",
             "type": "main",
             "index": 0
           }

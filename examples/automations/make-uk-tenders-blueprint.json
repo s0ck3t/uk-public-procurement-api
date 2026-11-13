@@ -26,9 +26,9 @@
       "module": "apify:runActor",
       "version": 1,
       "parameters": {
-        "actorId": "YOUR_APIFY_USERNAME/uk-public-procurement-ocds-enricher",
+        "actorId": "jamestyas/uk-public-procurement-ocds-enricher",
         "waitForFinish": true,
-        "input": "{\n  \"sources\": [\"find_a_tender\", \"contracts_finder\", \"public_contracts_scotland\"],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"date_from\": \"{{formatDate(addDays(now; -1); \"YYYY-MM-DD\")}}\",\n  \"date_to\": \"{{formatDate(now; \"YYYY-MM-DD\")}}\",\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
+        "input": "{\n  \"sources\": [\"find_a_tender\", \"contracts_finder\", \"public_contracts_scotland\"],\n  \"notice_type\": \"tender\",\n  \"min_value_gbp\": 100000,\n  \"enrich_companies_house\": true,\n  \"max_records\": 100\n}"
       },
       "filter": null,
       "metadata": {
